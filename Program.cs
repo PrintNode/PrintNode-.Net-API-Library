@@ -32,7 +32,9 @@ namespace MyPrintNode
         private void run()
         {
             // instance of api client
-            PrintNodeService service = new PrintNodeService("https://api.printnode.com/", "<api username here>", "<api password here");
+            PrintNodeService service = new PrintNodeService(
+                "https://api.printnode.com/",
+                "<api key>");
 
             // submits a print job and prints out the printjob ID
             Console.WriteLine("Print Job ID is " + service.SubmitPrintJob());
@@ -59,22 +61,20 @@ namespace MyPrintNode
     {
         private readonly string address;
         private readonly string username;
-        private readonly string password;
 
         // TODO send base64 image
         // TODO remove this
         private readonly Dictionary<string, string> Endpoints = new Dictionary<string, string>()
 			{
-				{"Computers", "computers.json"},
-				{"Printers", "printers.json"},
-				{"PrintJobs", "printjobs.json"}
+				{"Computers", "computers"},
+				{"Printers", "printers"},
+				{"PrintJobs", "printjobs"}
 			};
 
-        public PrintNodeService(string address, string username, string password)
+        public PrintNodeService(string address, string username)
         {
             this.address = address;
             this.username = username;
-            this.password = password;
         }
 
         public string GetComputers()
@@ -98,7 +98,7 @@ namespace MyPrintNode
         public string SubmitPrintJob()
         {
 
-            string source = "PrintNodeApi/1.0";
+            string source = "PrintNodeApi/3.0";
             string title = "YukonTestPdf";
             string printerId = "1";
 
@@ -112,6 +112,7 @@ namespace MyPrintNode
             sb.Append("\"source\": \"PrintNodeApi/1.0\"");
             sb.Append("}");
             
+
             string response = Post("PrintJobs", sb.ToString());
 
             // strips off quotes around the id
@@ -146,7 +147,7 @@ namespace MyPrintNode
             request.ContentType = "application/json";
 
             // basic authentication
-            string credentials = String.Format("{0}:{1}", username, password);
+            string credentials = String.Format("{0}:", username);
             byte[] bytes = Encoding.ASCII.GetBytes(credentials);
             string base64 = Convert.ToBase64String(bytes);
             string authorization = String.Concat("Basic ", base64);
